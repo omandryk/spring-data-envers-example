@@ -1,12 +1,14 @@
-package com.icoderman.config;
+package com.icoderman.app.config;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.hibernate.envers.strategy.ValidityAuditStrategy;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.env.Environment;
 import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -27,11 +29,13 @@ import java.util.Map;
 @Configuration
 @EnableJpaRepositories(basePackages = "com.icoderman.app.dao",
 		repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class)
-//@EnableTransactionManagement
-//@EnableAspectJAutoProxy
-public class SpringDataJPATestConfig {
+@EnableTransactionManagement
+@EnableJpaAuditing
+@EnableAspectJAutoProxy
+@ComponentScan("com.icoderman.app")
+public class SpringConfig {
 	private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	private static final String HBM2DDL_AUTO = "validate";  // update
+	private static final String HBM2DDL_AUTO = "create";  // update
 	private static final String DIALECT = "org.hibernate.dialect.MySQL5InnoDBDialect";
 	private static final String PACKAGES_TO_SCAN = "com.icoderman";
 
@@ -62,6 +66,7 @@ public class SpringDataJPATestConfig {
 		jpaProperties.put("hibernate.show_sql", Boolean.TRUE);
 		jpaProperties.put("hibernate.format_sql", Boolean.FALSE);
 		jpaProperties.put("org.hibernate.envers.audit_strategy", ValidityAuditStrategy.class.getName());
+		jpaProperties.put("org.hibernate.envers.audit_table_suffix", "_aud");
 		factory.setJpaPropertyMap(jpaProperties);
 
 		return factory;
